@@ -3,5 +3,5 @@
 void main()
 {
 	printf("Hello World\n");
-	printf("TestBranch\n");
+	printf("merge test\n");
 }
