@@ -25,7 +25,7 @@ int main(void) {
 	memset((char*)&sin, '\0', sizeof(sin));
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(PORTNUM);
-	sin.sin_addr.s_addr = inet_addr("119.194.249.38");
+	sin.sin_addr.s_addr = inet_addr("119.194.249.14");
 
 	if (bind(sd, (struct sockaddr *)&sin, sizeof(sin))) {
 		perror("bind");
