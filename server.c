@@ -7,7 +7,7 @@
 #include<stdio.h>
 #include<netinet/in.h>
 
-#define PORTNUM 9000
+#define PORTNUM 7777
 
 int main(void) {
 	int i;
@@ -26,6 +26,7 @@ int main(void) {
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(PORTNUM);
 	sin.sin_addr.s_addr = inet_addr("119.194.249.14");
+	printf("port : %x\naddr : %x\n", sin.sin_port, sin.sin_addr.s_addr);
 
 	if (bind(sd, (struct sockaddr *)&sin, sizeof(sin))) {
 		perror("bind");
