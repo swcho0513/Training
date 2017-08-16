@@ -1,81 +1,96 @@
-#include<sys/types.h>
-#include<sys/socket.h>
-#include<unistd.h>
-#include<arpa/inet.h>
-#include<stdlib.h>
-#include<string.h>
-#include<stdio.h>
-#include<netinet/in.h>
+#include "header.h"
 
-#define PORTNUM 7777
+void *clnt_connection(void *arg);
+void send_message(char *message, int len);
 
-int main(void) {
-	int i;
-	char buf[256];
-	char buf2[256];
-	struct sockaddr_in sin, cli;
-	int sd, ns, clientlen = sizeof(cli);
+int clnt_number = 0;
+int clnt_socks[MAX_CONNECT];
 
-	if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-		perror("socket");
+pthread_mutex_t mutex;
+
+int main(int argc, char **argv)
+{
+	int serv_sock;
+	int clnt_sock;
+	struct sockaddr_in serv_addr;
+	struct sockaddr_in clnt_addr;
+	int clnt_addr_size;
+	pthread_t thread;
+
+	if(argc != 2)
+	{
+		printf("Usage : %s <port>\n", argv[0]);
 		exit(1);
 	}
-	printf("** Create Socket\n");
+	
+	if(pthread_mutex_init(&mutex, NULL))
+		exit_error("mutex init error");
+		
+	serv_sock = socket(PF_INET, SOCK_STREAM, 0);
+	if(serv_sock == -1)
+		exit_error("socket() error");
 
-	memset((char*)&sin, '\0', sizeof(sin));
-	sin.sin_family = AF_INET;
-	sin.sin_port = htons(PORTNUM);
-	sin.sin_addr.s_addr = inet_addr("119.194.249.14");
-	printf("port : %x\naddr : %x\n", sin.sin_port, sin.sin_addr.s_addr);
-
-	if (bind(sd, (struct sockaddr *)&sin, sizeof(sin))) {
-		perror("bind");
-		exit(1);
-	}
-	printf("** Bind Socket \n");
-
-	if (listen(sd, 15)) {
-		perror("listen");
-		exit(1);
-	}
-	printf("*** Listen Socket\n");
-
-	i = 0;
-
-	while (1) {
-		if ((ns = accept(sd, (struct sockaddr *)&cli, &clientlen)) == -1) {
-			perror("accept");
-			exit(1);
-		}
-
-		else if (ns != -1 && i == 0)
-			printf(" Acept Client\n");
-
-		switch (fork()) {
-		case 0:
-			if (i == 0) {
-				printf("** Fork Client\n");
-				i++;
-			}
-			close(sd);
-
-			printf("Enter msg:");
-			gets(buf);
-
-			if (send(ns, buf, strlen(buf) + 1, 0) == -1) {
-				perror("send");
-				exit(1);
-			}
-
-			if (recv(ns, buf, sizeof(buf), 0) == -1) {
-				perror("recv");
-				exit(1);
-			}
-
-			printf("\n**From Client: %s\n", buf);
-			exit(0);
-		}
-		close(ns);
+	memset(&serv_addr, 0, sizeof(serv_addr));
+	serv_addr.sin_family = AF_INET;
+	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serv_addr.sin_port = htons(atoi(argv[1]));
+	
+	if(bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
+		exit_error("bind() error");
+	
+	if(listen(serv_sock, 5) == -1)
+		exit_error("listen() error");
+	
+	while(1)
+	{
+		clnt_addr_size = sizeof(clnt_addr);
+		clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
+       
+		pthread_mutex_lock(&mutex);
+       
+		clnt_socks[clnt_number++] = clnt_sock;
+		pthread_mutex_unlock(&mutex);
+		
+		pthread_create(&thread, NULL, clnt_connection, (void *)(intptr_t) clnt_sock);
+		printf(" IP : %s \n", inet_ntoa(clnt_addr.sin_addr));
 	}
 	return 0;
+}
+
+void *clnt_connection(void *arg)
+{
+	int clnt_sock = (intptr_t) arg;
+	int str_len=0;
+	char message[BUFSIZE];
+	int i;
+
+	while((str_len = read(clnt_sock, message, sizeof(message))) != 0)
+		send_message(message, str_len);
+  
+	pthread_mutex_lock(&mutex);
+	for(i=0; i<clnt_number; i++)
+	{ 
+		if(clnt_sock == clnt_socks[i])
+		{
+			for(; i < clnt_number-1; i++)
+				clnt_socks[i] = clnt_socks[i+1];
+			break;
+		}
+	}
+	clnt_number--;
+  
+	pthread_mutex_unlock(&mutex);
+
+	close(clnt_sock);
+	return 0;
+}
+
+void send_message(char *message, int len)
+{
+	int i;
+	pthread_mutex_lock(&mutex);
+  
+	for(i=0; i<clnt_number; i++)
+		write(clnt_socks[i], message, len);
+	pthread_mutex_unlock(&mutex);
 }

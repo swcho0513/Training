@@ -1,21 +1,18 @@
 CC = gcc
-CFLAGS = -W -Wall
-TARGET = client server
-SRCS = $(wildcard *.c)
-OBJS = $(SRCS:.c=.o)
+CFLAGS = 
+CTAGS = -pthread
+TARGET = server client
+HEADER = header.h
+SERV_SRC = server.c exit_error.c
+CLNT_SRC = client.c exit_error.c login.c
 
-all: $(TARGET)
+all : $(TARGET)
 
-client: client.o
-	$(CC) $(CFLAGS) -o $@ $^
-	rm $^
+server : $(SERV_SRC) $(HEADER)
+	$(CC) $(CFLAGS) -o $@ $(SERV_SRC) $(CTAGS)
 
-server: server.o
-	$(CC) $(CFLAGS) -o $@ $^
-	rm $^
+client : $(CLNT_SRC) $(HEADER)
+	$(CC) $(CFLAGS) -o $@ $(CLNT_SRC) $(CTAGS)
 
-.c.o:
-	$(CC) $(CFLAGS) -c $^
-
-clean:
+clean :
 	rm $(TARGET)
