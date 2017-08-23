@@ -15,13 +15,13 @@ int main(int argc, char **argv)
 	pthread_t snd_thread, rcv_thread;
 	void *thread_result;
 
-	if(argc != 4)
+	if(argc != 3)
 	{
 		printf("Usage : %s <ip> <port> \n", argv[0]);
 		exit(1);
 	}
-	
-	sprintf(name, "[%s]", argv[3]);
+	user_man();
+	sprintf(name, "[%s]", user_DB[user_index].id);
 
 	if((sock = socket(PF_INET, SOCK_STREAM, 0)) == -1)
 		exit_error("socket() error");
@@ -33,6 +33,7 @@ int main(int argc, char **argv)
 
 	if(connect(sock,(struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
 		exit_error("connect() error!");
+
 	printf("Chatting Program Started...\n");
 
 	pthread_create(&snd_thread, NULL, snd_message, (void *)(intptr_t) sock);

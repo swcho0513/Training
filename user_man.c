@@ -10,15 +10,7 @@
 #include "header.h"
 
 #define USER_DB 	"user_db.txt"
-#define MAX_USER 	100
 
-typedef struct
-{
-	char id[20];
-	char pw[20];
-}User;
-
-User user_DB[MAX_USER];
 int user_cnt;
 
 int menu();
@@ -52,6 +44,7 @@ void user_man()
 	}
 }
 
+
 int menu()
 {
 	int m;
@@ -63,13 +56,14 @@ int menu()
 	printf(" ---------------\n");
 	printf("Input number : ");
 	scanf("%d", &m);
+	__fpurge(stdin);
 	return m;
 }
 
 int read_db()
 {
 	FILE *fp;
-	char buf[128] = "\0";
+	char buf[128];
 	char *tmp;
 	int cnt = 0;
 
@@ -84,9 +78,11 @@ int read_db()
 		if(buf[strlen(buf)-1] == '\n')
 			buf[strlen(buf)-1] = '\0';
 		tmp = strtok(buf, " ");
-		strcpy(user_DB[cnt].id, tmp);
+		if(tmp)
+			strcpy(user_DB[cnt].id, tmp);
 		tmp = strtok(NULL, " ");
-		strcpy(user_DB[cnt].pw, tmp);
+		if(tmp)
+			strcpy(user_DB[cnt].pw, tmp);
 		cnt++;
 	}
 	user_cnt = cnt;
@@ -102,20 +98,23 @@ int login()
 	while(1)
 	{
 		printf("ID(e : exit to menu) : ");
-		fgets(input_id, 20, stdin);
-		if(input_id == "e");
+		FGETS(input_id, 20, stdin);
+		if(!strcmp(input_id , "e"))
 			return 1;
 		if((id_index = check_id(input_id)) == -1)
 			printf("Cannot find id. Input again.\n");
 		else
-			break;
-		printf("[%s] Password : ", input_id);
-		fgets(input_pw, 20, stdin);
-		if(check_pw(input_pw, id_index) == -1)
-			printf("Input wrong password. Input again.\n");
-		else
-			break;
+		{
+		
+			printf("[%s] Password : ", input_id);
+			FGETS(input_pw, 20, stdin);
+			if(check_pw(input_pw, id_index) == -1)
+				printf("Input wrong password. Input again.\n");
+			else
+				break;
+		}
 	}
+	user_index = id_index;
 	return 0;
 }
 
@@ -130,7 +129,7 @@ int check_id(char *input)
 	return -1;
 }
 
-int cheak_pw(char *input, int index)
+int check_pw(char *input, int index)
 {
 	if(strcmp(user_DB[index].pw, input) == 0)
 		return 0;
@@ -147,7 +146,9 @@ int join()
 	{
 		printf("Input ID & Password (5~20), input 'e' to exit menu.\n");
 		printf("New ID : ");
-		fgets(new_id, 40, stdin);
+		FGETS(new_id, 40, stdin);
+		if(!strcmp(new_id, "e"))
+			return 1;
 		if(strlen(new_id) < 5 || strlen(new_id) > 20)
 			printf("Input 5~20 characters for id.\n");
 		else if(check_id(new_id) == 0)
@@ -158,19 +159,19 @@ int join()
 	while(1)
 	{
 		printf("PW : ");
-		fgets(new_pw, 40, stdin);
+		FGETS(new_pw, 40, stdin);
 		if(strlen(new_pw) < 5 || strlen(new_pw) > 20)
 			printf("Input 5~20 characters for password.\n");
 		else
 			break;
 	}
 	FILE *fp;
-	fopen(USER_DB, "a");
+	fp = fopen(USER_DB, "a+");
 	fprintf(fp, "%s %s\n", new_id, new_pw);
 	fclose(fp);
 	user_cnt++;
 	strcpy(user_DB[user_cnt].id, new_id);
 	strcpy(user_DB[user_cnt].pw, new_pw);
 
-	return 0;
+	return 1;
 }

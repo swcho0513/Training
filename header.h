@@ -9,27 +9,21 @@
 #include <pthread.h>
 
 #define	BUFSIZE		100
-#define	ID_LEN		10
+#define	ID_LEN		20
 #define	PW_LEN		20
 #define	MAX_CONNECT	10
+#define MAX_USER	100
+#define FGETS(str, len, input) { fgets(str, len, input);\
+		if(str[strlen(str)-1] = '\n') str[strlen(str)-1] = '\0'; }
 
 void exit_error(char *message);
-// void login(char *name);
+void user_man();
 
-#if 0	// login function making...
-int login(char *ID, char *PW)
+typedef struct
 {
-	char *input_id
-	char *input_pw;
-	printf("ID : ");
-	fgets(input_id, ID_LEN, stdin);
-	// compare ID and DB_id -> if, diff -> loop
-	printf("PW : ");
-	fgets(input_pw, PW_LEN, stdin);
-	// compare PW and DB_id_pw -> if, diff -> return to ID input
-#endif
+	char id[ID_LEN];
+	char pw[PW_LEN];
+}User;
 
-#if 0	// function making
-
-
-#endif
+User user_DB[MAX_USER];
+int user_index;

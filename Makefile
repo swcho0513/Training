@@ -16,3 +16,6 @@ client : $(CLNT_SRC) $(HEADER)
 
 clean :
 	rm $(TARGET)
+
+cleandb :
+	rm user_db.txt

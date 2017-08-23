@@ -40,6 +40,9 @@ int main(int argc, char **argv)
 	
 	if(listen(serv_sock, 5) == -1)
 		exit_error("listen() error");
+
+	printf("Chatting Server Inited.\n");
+	printf("Wating for client login.\n");	
 	
 	while(1)
 	{
@@ -52,7 +55,7 @@ int main(int argc, char **argv)
 		pthread_mutex_unlock(&mutex);
 		
 		pthread_create(&thread, NULL, clnt_connection, (void *)(intptr_t) clnt_sock);
-		printf(" IP : %s \n", inet_ntoa(clnt_addr.sin_addr));
+		printf(" [%s] (ip: %s) login.\n", user_DB[user_index].id, inet_ntoa(clnt_addr.sin_addr));
 	}
 	return 0;
 }
