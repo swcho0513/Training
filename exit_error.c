@@ -1,3 +1,12 @@
+/******************************************************************************
+ *
+ *  File Name : exit_error.c
+ *
+ *  File creation: 2017-08-16
+ *  Function : Handle error & Exit program with print error message
+ *
+ ******************************************************************************/
+
 #include "header.h"
 
 void exit_error(char *message)
