@@ -12,7 +12,7 @@ CTAGS = -pthread
 TARGET = server client
 HEADER = header.h
 SERV_SRC = server.c exit_error.c
-CLNT_SRC = client.c exit_error.c user_man.c
+CLNT_SRC = client.c exit_error.c user_man.c sha1.c security.c
 
 all : $(TARGET)
 

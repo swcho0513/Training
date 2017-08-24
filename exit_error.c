@@ -3,7 +3,7 @@
  *  File Name : exit_error.c
  *
  *  File creation: 2017-08-16
- *  Function : Handle error & Exit program with print error message
+ *  Function : Exit program with print error message
  *
  ******************************************************************************/
 

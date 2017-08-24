@@ -18,8 +18,8 @@
 #include <pthread.h>
 
 #define	BUFSIZE		100
-#define	ID_LEN		20
-#define	PW_LEN		20
+#define	ID_LEN		128
+#define	PW_LEN		128
 #define	MAX_CONNECT	10
 #define MAX_USER	100
 #define FGETS(str, len, input) { fgets(str, len, input);\
@@ -36,3 +36,5 @@ typedef struct
 
 User user_DB[MAX_USER];
 int user_index;
+
+void encrypt_SHA1(char *data);

@@ -8,6 +8,7 @@
  ******************************************************************************/
 
 #include "header.h"
+#include "sha1.h"
 
 #define USER_DB 	"user_db.txt"
 
@@ -80,7 +81,7 @@ int read_db()
 		tmp = strtok(buf, " ");
 		if(tmp)
 			strcpy(user_DB[cnt].id, tmp);
-		tmp = strtok(NULL, " ");
+		tmp = strtok(NULL, "\n");
 		if(tmp)
 			strcpy(user_DB[cnt].pw, tmp);
 		cnt++;
@@ -95,11 +96,12 @@ int login()
 	char input_id[20];
 	char input_pw[20];
 	int id_index;
+	printf("--------- Log-in ---------\n");
 	while(1)
 	{
 		printf("ID(e : exit to menu) : ");
 		FGETS(input_id, 20, stdin);
-		if(!strcmp(input_id , "e"))
+		if(!strcmp(input_id, "e"))
 			return 1;
 		if((id_index = check_id(input_id)) == -1)
 			printf("Cannot find id. Input again.\n");
@@ -108,6 +110,7 @@ int login()
 		
 			printf("[%s] Password : ", input_id);
 			FGETS(input_pw, 20, stdin);
+			encrypt_SHA1(input_pw);
 			if(check_pw(input_pw, id_index) == -1)
 				printf("Input wrong password. Input again.\n");
 			else
@@ -131,6 +134,13 @@ int check_id(char *input)
 
 int check_pw(char *input, int index)
 {
+	int m, n;
+	for(m=0; m<20; m++)
+		printf("%02X ", user_DB[index].pw[m]);
+	printf("\n");
+	for(n=0; n<20; n++)
+		printf("%02X ", input[n]);
+	printf("\n");
 	if(strcmp(user_DB[index].pw, input) == 0)
 		return 0;
 	else
@@ -141,7 +151,7 @@ int join()
 {
 	char new_id[40];
 	char new_pw[40];
-	printf("Welcome! Create New ID for join us.\n");
+	printf("---------- JOIN ----------\n");
 	while(1)
 	{
 		printf("Input ID & Password (5~20), input 'e' to exit menu.\n");
@@ -165,8 +175,10 @@ int join()
 		else
 			break;
 	}
+
 	FILE *fp;
 	fp = fopen(USER_DB, "a+");
+	encrypt_SHA1(new_pw);
 	fprintf(fp, "%s %s\n", new_id, new_pw);
 	fclose(fp);
 	user_cnt++;
