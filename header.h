@@ -2,8 +2,8 @@
  *
  *  File Name : header.h
  *
- *  File creation : 2017-08-16
- *  Function : Library file <include, define, function>
+ *  File Create : 2017-08-16
+ *  Description : Header file for all source file
  *
  ******************************************************************************/
 

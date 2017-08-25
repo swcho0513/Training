@@ -2,8 +2,8 @@
  *
  *  File Name : user_man.c
  *
- *  File creation : 2017-08-17
- *  Function : Administer user information database
+ *  File Create : 2017-08-17
+ *  Description : Administer user information database
  *
  ******************************************************************************/
 

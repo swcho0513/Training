@@ -2,8 +2,8 @@
  *
  *  File Name : server.c
  *
- *  File creation : 2017-08-16
- *  Function : Chatting server
+ *  File Create : 2017-08-16
+ *  Description : Chatting server
  *
  ******************************************************************************/
 

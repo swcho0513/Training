@@ -2,8 +2,8 @@
  *
  *  File Name : client.c
  *
- *  File creation : 2017-08-16
- *  Function : Chatting client
+ *  File Create : 2017-08-16
+ *  Description : Chatting client
  *
  ******************************************************************************/
 

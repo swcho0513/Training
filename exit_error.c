@@ -2,8 +2,8 @@
  *
  *  File Name : exit_error.c
  *
- *  File creation: 2017-08-16
- *  Function : Exit program with print error message
+ *  File Create : 2017-08-16
+ *  Description : Exit program with print error message
  *
  ******************************************************************************/
 
