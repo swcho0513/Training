@@ -17,6 +17,7 @@
 #include <netinet/in.h>
 #include <pthread.h>
 
+#define NAMESIZE	130
 #define	BUFSIZE		100
 #define	ID_LEN		128
 #define	PW_LEN		128

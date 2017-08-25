@@ -10,10 +10,11 @@
 #include "header.h"
 
 void *clnt_connection(void *arg);
-void send_message(char *message, int len);
+void snd_message(char *message, int len);
 
 int clnt_number = 0;
 int clnt_socks[MAX_CONNECT];
+char clnt_name[MAX_CONNECT][NAMESIZE];
 
 pthread_mutex_t mutex;
 
@@ -50,21 +51,23 @@ int main(int argc, char **argv)
 	if(listen(serv_sock, 5) == -1)
 		exit_error("listen() error");
 
-	printf("Chatting Server Inited.\n");
-	printf("Wating for client login.\n");	
+	printf("-- Chatting Server Initialized.\n");
+	printf("-- Wating for client login.....\n");	
 	
 	while(1)
 	{
 		clnt_addr_size = sizeof(clnt_addr);
 		clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
-       
+		
+		read(clnt_sock, clnt_name[clnt_number], sizeof(clnt_name));
+		printf(" %s (ip: %s) login.\n", clnt_name[clnt_number], inet_ntoa(clnt_addr.sin_addr));
+
 		pthread_mutex_lock(&mutex);
        
 		clnt_socks[clnt_number++] = clnt_sock;
 		pthread_mutex_unlock(&mutex);
 		
 		pthread_create(&thread, NULL, clnt_connection, (void *)(intptr_t) clnt_sock);
-		printf(" [%s] (ip: %s) login.\n", user_DB[user_index].id, inet_ntoa(clnt_addr.sin_addr));
 	}
 	return 0;
 }
@@ -72,12 +75,15 @@ int main(int argc, char **argv)
 void *clnt_connection(void *arg)
 {
 	int clnt_sock = (intptr_t) arg;
-	int str_len=0;
+	int msg_len=0;
 	char message[BUFSIZE];
 	int i;
 
-	while((str_len = read(clnt_sock, message, sizeof(message))) != 0)
-		send_message(message, str_len);
+	while((msg_len = read(clnt_sock, message, sizeof(message))) != 0)
+	{
+		printf("%s", message);
+		snd_message(message, msg_len);
+	}
   
 	pthread_mutex_lock(&mutex);
 	for(i=0; i<clnt_number; i++)
@@ -89,15 +95,15 @@ void *clnt_connection(void *arg)
 			break;
 		}
 	}
+	printf(" %s logout.\n", clnt_name[clnt_number]);
 	clnt_number--;
-  
 	pthread_mutex_unlock(&mutex);
-
 	close(clnt_sock);
+
 	return 0;
 }
 
-void send_message(char *message, int len)
+void snd_message(char *message, int len)
 {
 	int i;
 	pthread_mutex_lock(&mutex);

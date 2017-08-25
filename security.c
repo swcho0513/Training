@@ -22,7 +22,7 @@ void encrypt_SHA1(char *data)
 		exit_error("SHA1 Input Error");
 	
 	if(SHA1Result(&sha, result))
-		exit_error("SHA1 Result Error, cannot compute message digest");
+		exit_error("SHA1 Result Error : Cannot encrypt data.");
 
 	strcpy(data, result);
 }

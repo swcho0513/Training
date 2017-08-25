@@ -26,8 +26,9 @@ void user_man()
 {
 	int loop = 1;
 	memset(user_DB, 0x00, sizeof(user_DB));
-	if(read_db() == -1)
-		printf("There is no user in database. Create new id.\n");
+	read_db();
+//	if(read_db() == -1)
+//		printf("There is no user in database. Create new id.\n");
 
 	while(loop)
 	{
@@ -45,15 +46,14 @@ void user_man()
 	}
 }
 
-
 int menu()
 {
 	int m;
 
 	printf(" --- M E N U ---\n");
-	printf(" - 1. Log in	\n");
-	printf(" - 2. Join	\n");
-	printf(" - 3. Quit	\n");
+	printf(" - 1. L O G I N	\n");
+	printf(" - 2. J O I N	\n");
+	printf(" - 3. Q U I T	\n");
 	printf(" ---------------\n");
 	printf("Input number : ");
 	scanf("%d", &m);
@@ -97,6 +97,8 @@ int login()
 	char input_pw[20];
 	int id_index;
 	printf("--------- Log-in ---------\n");
+	if(user_cnt == 0)
+		printf("There is no user in database. Use [JOIN] menu.\n");
 	while(1)
 	{
 		printf("ID(e : exit to menu) : ");
@@ -124,7 +126,7 @@ int login()
 int check_id(char *input)
 {
 	int i;
-	for(i=0; i<user_cnt; i++)
+	for(i=0; i<=user_cnt; i++)
 	{
 		if(strcmp(user_DB[i].id, input) == 0)
 			return i;
@@ -134,17 +136,13 @@ int check_id(char *input)
 
 int check_pw(char *input, int index)
 {
-	int m, n;
-	for(m=0; m<20; m++)
-		printf("%02X ", user_DB[index].pw[m]);
-	printf("\n");
-	for(n=0; n<20; n++)
-		printf("%02X ", input[n]);
-	printf("\n");
-	if(strcmp(user_DB[index].pw, input) == 0)
-		return 0;
-	else
-		return -1;
+	int i;
+	for(i=0; i<20; i++)
+	{
+		if(user_DB[index].pw[i] != input[i])
+			return -1;
+	}		
+	return 0;
 }
 
 int join()

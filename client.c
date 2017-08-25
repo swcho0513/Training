@@ -9,8 +9,6 @@
 
 #include "header.h"
 
-#define NAMESIZE 100
-
 void *snd_message(void *arg);
 void *rcv_message(void *arg);
 
@@ -29,6 +27,7 @@ int main(int argc, char **argv)
 		printf("Usage : %s <ip> <port> \n", argv[0]);
 		exit(1);
 	}
+
 	user_man();
 	sprintf(name, "[%s]", user_DB[user_index].id);
 
@@ -44,6 +43,8 @@ int main(int argc, char **argv)
 		exit_error("connect() error!");
 
 	printf("Chatting Program Started...\n");
+	
+	write(sock, name, strlen(name));
 
 	pthread_create(&snd_thread, NULL, snd_message, (void *)(intptr_t) sock);
 	pthread_create(&rcv_thread, NULL, rcv_message, (void *)(intptr_t) sock);
@@ -63,8 +64,6 @@ void *snd_message(void *arg)
 	fgets(message, BUFSIZE, stdin);
 	if(!strcmp(message, "q\n"))
 	{
-//		sprintf(snd_msg, "%s disconnect...", name);
-//		write(sock, snd_msg, strlen(snd_msg));
 	  	close(sock);
 		exit(0);
 	}
