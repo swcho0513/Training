@@ -39,3 +39,6 @@ User user_DB[MAX_USER];
 int user_index;
 
 void encrypt_SHA1(char *data);
+void createKey_RSA(int *n, int *e, int *d);
+void encrypt_RSA(char *input, int n, int e);
+void decrypt_RSA(char *input, int n, int d);

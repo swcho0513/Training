@@ -14,10 +14,7 @@
 #include <string.h>
 
 int p, q, pi;
-int n, e, d;
 
-void selectPK(int *p, int *q);
-void selectE(int pi, int *e);
-void selectD(int pi, int e, int *d);
-
-// void createKey(int p, int q);
+void selectpk(int *p, int *q);
+int calc_e(int pi);
+int calc_d(int pi, int e);

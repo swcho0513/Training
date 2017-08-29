@@ -7,42 +7,116 @@
  *
  ******************************************************************************/
 
+#include "header.h"
 #include "rsa.h"
+
+#if 0  //  for test
+void main()
+{
+        char txt[200] = "test";
+        createKey(&n, &e, &d);
+        printf("input text : %s\n", txt);
+        encrypt_RSA(txt, n, e);
+        printf("encrypted text : %s\n", txt);
+        decrypt_RSA(txt, n, d);
+        printf("decrypted text : %s\n", txt);
+}
+#endif
+
+void createKey_RSA(int *n, int *e, int *d)
+{
+	selectpk(&p, &q);
+	
+	*n = p*q;
+	pi = (p-1)*(q-1);
+
+	*e = calc_e(pi);
+	*d = calc_d(pi, *e);
+}
+
+void encrypt_RSA(char *input, int n, int e)
+{
+	int i, j;
+	int sum = 1;
+	char enc_msg[128] = "\0";
+	char output[128] = "";
+
+	for(i=0; i<strlen(input); i++)
+	{
+		for(j=0; j<e; j++)
+		{
+			sum *= (int)input[i];
+			sum %= n;
+		}
+		sprintf(enc_msg, "%d ", sum);
+		strcat(output, enc_msg);
+		sum = 1;
+	}
+	strcpy(input, output);
+}
+
+void decrypt_RSA(char *input, int n, int d)
+{
+	int i, j;
+	int sum = 1;
+	int word;
+	char dec_msg[128] = "";
+	char *tmp;
+	
+	i = 0;
+
+	word = atoi(strtok(input, " "));
+	while(word)
+	{
+		for(j=0; j<d; j++)
+		{
+			sum *= word;
+			sum %= n;
+		}
+		dec_msg[i++] = (char)sum;
+		sum = 1;
+		if(tmp = strtok(NULL, " "))
+			word = atoi(tmp);
+		else
+			break;
+	}
+	strcpy(input, dec_msg);
+}
 
 void selectpk(int *p, int *q)
 {
-	int random;
-	int i, j;
-	int ck, ck2 = 0;
+        int random;
+        int i, j;
+        int ck, ck2 = 0;
 
-	srand((unsigned)time(NULL));
-	random = (rand()%100);
-	
-	for(i=random; 1; i++)
-	{
-		for(j=2; j<i/2+1; j++)
-		{
-			if(i%j == 0)
-			{
-				ck = 1;
-				break;
-			}
-			ck = 0;
-		}
-		if(ck == 0 && ck2 == 1)
-		{
-			*q = i;
-			break;
-		}
-		if(ck == 0 && ck2 == 0)
-		{
-			*p = i;
-			ck2 = 1;
-		}
-	}
+        srand((unsigned)time(NULL));
+        random = (rand()%100);
+
+        for(i=random; 1; i++)
+        {
+                for(j=2; j<i/2+1; j++)
+                {
+                        if(i%j == 0)
+                        {
+                                ck = 1;
+                                break;
+                        }
+                        ck = 0;
+                }
+                if(ck == 0 && ck2 == 1)
+                {
+                        *q = i;
+                        break;
+                }
+                if(ck == 0 && ck2 == 0)
+                {
+                        *p = i;
+                        ck2 = 1;
+                }
+        }
 }
 
-void selecte(int pi, int *e)
+int calc_e(int pi)
 {
 	int i, j;
 	int tmp = 1;
@@ -55,104 +129,17 @@ void selecte(int pi, int *e)
 				tmp = j;
 		}
 		if(tmp == 1)
-		{
-			*e = i;
-			break;
-		}
+			return i;
 		tmp = 1;
 	}
 }
 
-void selectd(int e, int pi, int *d)
+int calc_d(int pi, int e)
 {
 	int i;
 	for(i=2; i<pi; i++)
 	{
 		if((e*i) % pi == 1)
-			*d = i;
+			return i;
 	}
-}
-
-
-int i, j;
-int sum = 1;
-int word;
-char string[128];
-char string2[128] = "\0";
-
-int p, q;
-int n;
-int pi;
-int e;
-int d;
-
-FILE *output, *input, *output2;
-
-void encrypt_RSA()
-{
-	output = fopen(ENC_TXT, "w");
-
-	selectpk(&p, &q);
-
-	n = p*q;
-	pi = (p-1)*(q-1);
-
-	selecte(pi, &e);
-	selectd(e, pi, &d);
-
-	printf("e=%d, d=%d", e, d);
-
-	printf("input : ");
-	fgets(string, 1024, stdin);
-	if(string[strlen(string)-1] == '\n')
-		string[strlen(string)-1] = '\0';
-
-	for(i=0; i<strlen(string); i++)
-	{
-		for(j=0; j<e; j++)
-		{
-			sum *= (int)string[i];
-			sum %= n;
-		}
-		fprintf(output, "%d\n", sum);
-		sum = 1;
-	}
-	printf("Encrypted in [%s] file\n", ENC_TXT);
-	fclose(output);
-}
-//	__fpurge(stdin);
-
-//	iprintf("Decrypt key input\n");
-//	getchar();
-
-void decrypt_RSA(char *input, int n, int d)
-{
-	char dec_msg[128];
-	int i = 0;
-	int word;
-	
-	word = strtok(input, " ");
-
-	while(!word)
-	{
-
-		word = (int)strtok(NULL, " ");
-
-		for(j=0; j<d; j++)
-		{
-			sum *= word;
-			sum %= n;
-		}
-		string2[i] = (char)sum;
-		i++;
-		sum = 1;
-	}
-
-	fputs(string2, output2);
-	printf("%s\n", string2);
-	printf("Decrypted in [%s] file\n", DEC_TXT);
-
-	fcloseall();
-
-	getchar();
 }

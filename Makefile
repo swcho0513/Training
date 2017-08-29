@@ -10,10 +10,11 @@ CC = gcc
 CFLAGS = 
 CTAGS = -pthread
 TARGET = server client
-HEADER = header.h
-SERV_SRC = server.c exit_error.c $(USER_MAN_SRC)
-CLNT_SRC = client.c exit_error.c $(USER_MAN_SRC)
-USER_MAN_SRC = user_man.c sha1.c security.c
+HEADER = header.h sha1.h rsa.h
+SERV_SRC = server.c exit_error.c $(USER_MAN_SRC) $(SECURE_SRC)
+CLNT_SRC = client.c exit_error.c $(USER_MAN_SRC) $(SECURE_SRC)
+USER_MAN_SRC = user_man.c
+SECURE_SRC = sha1.c sha.c rsa.c
 
 all : $(TARGET)
 
