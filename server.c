@@ -14,7 +14,7 @@ void snd_message(char *message, int len);
 
 int clnt_number = 0;
 int clnt_socks[MAX_CONNECT];
-char clnt_name[MAX_CONNECT][NAMESIZE];
+char clnt_name[NAMESIZE];
 
 pthread_mutex_t mutex;
 
@@ -28,9 +28,12 @@ int main(int argc, char **argv)
 	pthread_t thread;
 
 	if(argc != 2)
+//	{
+//		printf("Usage : %s <port>\n", argv[0]);
+//		exit(1);
+//	}
 	{
-		printf("Usage : %s <port>\n", argv[0]);
-		exit(1);
+		argv[1] = "7777";
 	}
 	
 	if(pthread_mutex_init(&mutex, NULL))
@@ -52,15 +55,26 @@ int main(int argc, char **argv)
 		exit_error("listen() error");
 
 	printf("-- Chatting Server Initialized.\n");
-	printf("-- Wating for client login.....\n");	
+	printf("-- Wating for client login.....\n");
+
+	int rsa_n, rsa_e, rsa_d;
+	char rsa_tmp[20] = "";
+	createKey_RSA(&rsa_n, &rsa_e, &rsa_d);
 	
 	while(1)
 	{
 		clnt_addr_size = sizeof(clnt_addr);
 		clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
 		
-		read(clnt_sock, clnt_name[clnt_number], sizeof(clnt_name));
-		printf(" %s (ip: %s) login.\n", clnt_name[clnt_number], inet_ntoa(clnt_addr.sin_addr));
+		read(clnt_sock, clnt_name, sizeof(clnt_name));
+		printf(" %s (ip: %s) login.\n", clnt_name, inet_ntoa(clnt_addr.sin_addr));
+		printf("%d %d %d\n", rsa_n, rsa_e, rsa_d);
+		sprintf(rsa_tmp, "%d", rsa_n);
+		write(clnt_sock, rsa_tmp, 16);
+		sprintf(rsa_tmp, "%d", rsa_e);
+		write(clnt_sock, rsa_tmp, 16);
+		sprintf(rsa_tmp, "%d", rsa_d);
+		write(clnt_sock, rsa_tmp, 16);
 
 		pthread_mutex_lock(&mutex);
        
@@ -81,13 +95,12 @@ void *clnt_connection(void *arg)
 
 	while((msg_len = read(clnt_sock, message, sizeof(message))) != 0)
 	{
-		printf("%s", message);
 		snd_message(message, msg_len);
 	}
-  
+
 	pthread_mutex_lock(&mutex);
 	for(i=0; i<clnt_number; i++)
-	{ 
+	{
 		if(clnt_sock == clnt_socks[i])
 		{
 			for(; i < clnt_number-1; i++)
@@ -95,7 +108,6 @@ void *clnt_connection(void *arg)
 			break;
 		}
 	}
-	printf(" %s logout.\n", clnt_name[clnt_number]);
 	clnt_number--;
 	pthread_mutex_unlock(&mutex);
 	close(clnt_sock);
@@ -107,7 +119,6 @@ void snd_message(char *message, int len)
 {
 	int i;
 	pthread_mutex_lock(&mutex);
-  
 	for(i=0; i<clnt_number; i++)
 		write(clnt_socks[i], message, len);
 	pthread_mutex_unlock(&mutex);

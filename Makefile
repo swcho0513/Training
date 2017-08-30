@@ -28,4 +28,4 @@ clean :
 	rm $(TARGET)
 
 cleandb :
-	rm user_db.txt
+	rm User_db.txt

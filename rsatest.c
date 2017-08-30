@@ -1,21 +1,22 @@
 #include "header.h"
 
 int main()
-{	
+{
 	char input[300] = "";
-	int n, e, d;
-	createKey_RSA(&n, &e, &d);
+	int rsa_n, rsa_e, rsa_d;
 	while(1)
 	{
-		printf(" : ");
-		FGETS(input, 300, stdin)
+		createKey_RSA(&rsa_n, &rsa_e, &rsa_d);
+		printf("N = %d, E = %d, D = %d\n", rsa_n, rsa_e, rsa_d);
+		printf("Input : ");
+		FGETS(input, 300, stdin);
 		if(!strcmp(input, "q"))
 			break;
-		printf("input msg : %s\n", input);
-		encrypt_RSA(input, n, e);
-		printf("encrypted : %s\n", input);
-		decrypt_RSA(input, n, d);
-		printf("decrypted : %s\n", input);
+		encrypt_RSA(input, rsa_n, rsa_e);
+		printf("Encrypted : %s\n", input);
+		decrypt_RSA(input, rsa_n, rsa_d);
+		printf("Decrypted : %s\n", input);
 	}
+
 	return 0;
 }

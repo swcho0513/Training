@@ -10,7 +10,7 @@
 #include "header.h"
 #include "sha1.h"
 
-#define USER_DB 	"user_db.txt"
+#define USER_DB 	"User_db.txt"
 
 int user_cnt;
 
@@ -98,7 +98,10 @@ int login()
 	int id_index;
 	printf("--------- Log-in ---------\n");
 	if(user_cnt == 0)
+	{
 		printf("There is no user in database. Use [JOIN] menu.\n");
+		return 1;
+	}
 	while(1)
 	{
 		printf("ID(e : exit to menu) : ");
@@ -109,7 +112,6 @@ int login()
 			printf("Cannot find id. Input again.\n");
 		else
 		{
-		
 			printf("[%s] Password : ", input_id);
 			FGETS(input_pw, 20, stdin);
 			encrypt_SHA1(input_pw);
@@ -179,9 +181,9 @@ int join()
 	encrypt_SHA1(new_pw);
 	fprintf(fp, "%s %s\n", new_id, new_pw);
 	fclose(fp);
-	user_cnt++;
 	strcpy(user_DB[user_cnt].id, new_id);
 	strcpy(user_DB[user_cnt].pw, new_pw);
+	user_cnt++;
 
 	return 1;
 }

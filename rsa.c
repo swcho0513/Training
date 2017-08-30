@@ -10,19 +10,6 @@
 #include "header.h"
 #include "rsa.h"
 
-#if 0  //  for test
-void main()
-{
-        char txt[200] = "test";
-        createKey(&n, &e, &d);
-        printf("input text : %s\n", txt);
-        encrypt_RSA(txt, n, e);
-        printf("encrypted text : %s\n", txt);
-        decrypt_RSA(txt, n, d);
-        printf("decrypted text : %s\n", txt);
-}
-#endif
-
 void createKey_RSA(int *n, int *e, int *d)
 {
 	selectpk(&p, &q);

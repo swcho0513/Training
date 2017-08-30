@@ -14,6 +14,7 @@ void *rcv_message(void *arg);
 
 char name[NAMESIZE] = "[Default]";
 char message[BUFSIZE];
+int rsa_n, rsa_e, rsa_d;
 
 int main(int argc, char **argv)
 {
@@ -23,9 +24,13 @@ int main(int argc, char **argv)
 	void *thread_result;
 
 	if(argc != 3)
+//	{
+//		printf("Usage : %s <ip> <port> \n", argv[0]);
+//		exit(1);
+//	}
 	{
-		printf("Usage : %s <ip> <port> \n", argv[0]);
-		exit(1);
+		argv[1] = "0.0.0.0";
+		argv[2] = "7777";
 	}
 
 	user_man();
@@ -45,6 +50,15 @@ int main(int argc, char **argv)
 	printf("Chatting Program Started...\n");
 	
 	write(sock, name, strlen(name));
+
+	char rsa_tmp[20] = "";
+	read(sock, rsa_tmp, 16);
+	rsa_n = atoi(rsa_tmp);
+	read(sock, rsa_tmp, 16);
+	rsa_e = atoi(rsa_tmp);
+	read(sock, rsa_tmp, 16);
+	rsa_d = atoi(rsa_tmp);
+	printf("client rsa = %d %d %d\n", rsa_n, rsa_e, rsa_d);
 
 	pthread_create(&snd_thread, NULL, snd_message, (void *)(intptr_t) sock);
 	pthread_create(&rcv_thread, NULL, rcv_message, (void *)(intptr_t) sock);
@@ -68,6 +82,7 @@ void *snd_message(void *arg)
 		exit(0);
 	}
 	sprintf(snd_msg, "%s %s", name, message);
+	encrypt_RSA(snd_msg, rsa_n, rsa_e);
 	write(sock, snd_msg, strlen(snd_msg));
 	}
 }
@@ -81,8 +96,11 @@ void *rcv_message(void *arg)
 	{
 		str_len = read(sock, rcv_msg, NAMESIZE+BUFSIZE-1);
 		if(str_len == -1)
-			return (void*)1;
+			return (void *)1;
 		rcv_msg[str_len] = 0;
-		fputs(rcv_msg, stdout);
+
+		decrypt_RSA(rcv_msg, rsa_n, rsa_d);
+		printf("%s", rcv_msg);
+//		fputs(rcv_msg, stdout);
 	}
 }
