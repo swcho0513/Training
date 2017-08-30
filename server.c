@@ -68,7 +68,6 @@ int main(int argc, char **argv)
 		
 		read(clnt_sock, clnt_name, sizeof(clnt_name));
 		printf(" %s (ip: %s) login.\n", clnt_name, inet_ntoa(clnt_addr.sin_addr));
-		printf("%d %d %d\n", rsa_n, rsa_e, rsa_d);
 		sprintf(rsa_tmp, "%d", rsa_n);
 		write(clnt_sock, rsa_tmp, 16);
 		sprintf(rsa_tmp, "%d", rsa_e);

@@ -58,7 +58,6 @@ int main(int argc, char **argv)
 	rsa_e = atoi(rsa_tmp);
 	read(sock, rsa_tmp, 16);
 	rsa_d = atoi(rsa_tmp);
-	printf("client rsa = %d %d %d\n", rsa_n, rsa_e, rsa_d);
 
 	pthread_create(&snd_thread, NULL, snd_message, (void *)(intptr_t) sock);
 	pthread_create(&rcv_thread, NULL, rcv_message, (void *)(intptr_t) sock);
