@@ -12,6 +12,8 @@
 
 void createKey_RSA(int *n, int *e, int *d)
 {
+	int p, q, pi;
+
 	selectpk(&p, &q);
 	
 	*n = p*q;
@@ -21,28 +23,28 @@ void createKey_RSA(int *n, int *e, int *d)
 	*d = calc_d(pi, *e);
 }
 
-void encrypt_RSA(char *input, int n, int e)
+void encrypt_RSA(char *data, int n, int e)
 {
 	int i, j;
 	int sum = 1;
 	char enc_msg[128] = "\0";
 	char output[128] = "";
 
-	for(i=0; i<strlen(input); i++)
+	for(i=0; i<strlen(data); i++)
 	{
 		for(j=0; j<e; j++)
 		{
-			sum *= (int)input[i];
+			sum *= (int)data[i];
 			sum %= n;
 		}
 		sprintf(enc_msg, "%d ", sum);
 		strcat(output, enc_msg);
 		sum = 1;
 	}
-	strcpy(input, output);
+	strcpy(data, output);
 }
 
-void decrypt_RSA(char *input, int n, int d)
+void decrypt_RSA(char *data, int n, int d)
 {
 	int i, j;
 	int sum = 1;
@@ -52,7 +54,7 @@ void decrypt_RSA(char *input, int n, int d)
 	
 	i = 0;
 
-	word = atoi(strtok(input, " "));
+	word = atoi(strtok(data, " "));
 	while(word)
 	{
 		for(j=0; j<d; j++)
@@ -67,7 +69,7 @@ void decrypt_RSA(char *input, int n, int d)
 		else
 			break;
 	}
-	strcpy(input, dec_msg);
+	strcpy(data, dec_msg);
 }
 
 void selectpk(int *p, int *q)

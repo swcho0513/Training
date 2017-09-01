@@ -28,6 +28,7 @@ int main(int argc, char **argv)
 //		printf("Usage : %s <ip> <port> \n", argv[0]);
 //		exit(1);
 //	}
+// default
 	{
 		argv[1] = "0.0.0.0";
 		argv[2] = "7777";
@@ -50,7 +51,8 @@ int main(int argc, char **argv)
 	printf("Chatting Program Started...\n");
 	
 	write(sock, name, strlen(name));
-
+	
+	// Receive RSA Keys.
 	char rsa_tmp[20] = "";
 	read(sock, rsa_tmp, 16);
 	rsa_n = atoi(rsa_tmp);
@@ -100,6 +102,5 @@ void *rcv_message(void *arg)
 
 		decrypt_RSA(rcv_msg, rsa_n, rsa_d);
 		printf("%s", rcv_msg);
-//		fputs(rcv_msg, stdout);
 	}
 }

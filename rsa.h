@@ -7,13 +7,10 @@
  *
  ******************************************************************************/
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-
-int p, q, pi;
 
 void selectpk(int *p, int *q);
 int calc_e(int pi);

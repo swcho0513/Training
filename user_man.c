@@ -27,8 +27,6 @@ void user_man()
 	int loop = 1;
 	memset(user_DB, 0x00, sizeof(user_DB));
 	read_db();
-//	if(read_db() == -1)
-//		printf("There is no user in database. Create new id.\n");
 
 	while(loop)
 	{
