@@ -61,7 +61,22 @@ void func()
 
 void block_msg(char *name)
 {
+	char *blockName;
 	printf("block [%s]'s msg.\n", name);
+	sprintf(blockName, "[%s]", name);
+	strcpy(blockUser[block_count], blockName);
+	block_count++;
+}
+
+int block_check(char *name)
+{
+	int i;
+	for(i=0; i<block_count; i++)
+	{
+		if(strcmp(name, blockUser[i]))
+			return -1;
+	}
+	return 0;
 }
 
 void kick_usr(char *name)
