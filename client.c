@@ -83,10 +83,9 @@ void *snd_message(void *arg)
 		  	close(sock);
 			exit(0);
 		}
-#if 0
+#if 1
  		else if(!strcmp(message, "-f"))
-			sprintf(snd_msg, "%s", snd_func());
-			write(sock, snd_msg, strlen(snd_msg));
+			func();
 #endif
 		else
 		{
