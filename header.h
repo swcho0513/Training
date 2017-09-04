@@ -3,7 +3,7 @@
  *  File Name : header.h
  *
  *  File Create : 2017-08-16
- *  Description : Header file for all source file
+ *  Description : Header
  *
  ******************************************************************************/
 
@@ -18,7 +18,7 @@
 #include <pthread.h>
 
 #define NAMESIZE	130
-#define	BUFSIZE		100
+#define	BUFSIZE		128
 #define	ID_LEN		128
 #define	PW_LEN		128
 #define	MAX_CONNECT	10
@@ -42,3 +42,5 @@ void encrypt_SHA1(char *data);
 void createKey_RSA(int *n, int *e, int *d);
 void encrypt_RSA(char *data, int n, int e);
 void decrypt_RSA(char *data, int n, int d);
+
+void func();

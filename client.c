@@ -75,16 +75,25 @@ void *snd_message(void *arg)
 {
 	int sock = (intptr_t) arg;
 	char snd_msg[NAMESIZE+BUFSIZE];
-	while(1){
-	fgets(message, BUFSIZE, stdin);
-	if(!strcmp(message, "q\n"))
+	while(1)
 	{
-	  	close(sock);
-		exit(0);
-	}
-	sprintf(snd_msg, "%s %s", name, message);
-	encrypt_RSA(snd_msg, rsa_n, rsa_e);
-	write(sock, snd_msg, strlen(snd_msg));
+		FGETS(message, BUFSIZE, stdin);
+		if(!strcmp(message, "-q"))
+		{
+		  	close(sock);
+			exit(0);
+		}
+#if 0
+ 		else if(!strcmp(message, "-f"))
+			sprintf(snd_msg, "%s", snd_func());
+			write(sock, snd_msg, strlen(snd_msg));
+#endif
+		else
+		{
+			sprintf(snd_msg, "%s %s", name, message);
+			encrypt_RSA(snd_msg, rsa_n, rsa_e);
+			write(sock, snd_msg, strlen(snd_msg));
+		}
 	}
 }
 
@@ -101,6 +110,6 @@ void *rcv_message(void *arg)
 		rcv_msg[str_len] = 0;
 
 		decrypt_RSA(rcv_msg, rsa_n, rsa_d);
-		printf("%s", rcv_msg);
+		printf("%s\n", rcv_msg);
 	}
 }
