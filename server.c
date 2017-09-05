@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 	}
 	
 	if(pthread_mutex_init(&mutex, NULL))
-		exit_error("mutex init error");
+		exit_error("pthread_mutex_init() error");
 		
 	serv_sock = socket(PF_INET, SOCK_STREAM, 0);
 	if(serv_sock == -1)
@@ -57,7 +57,8 @@ int main(int argc, char **argv)
 
 	printf("-- Chatting Server Initialized.\n");
 	printf("-- Wating for client login.....\n");
-
+	
+	block_count = 0;
 	int rsa_n, rsa_e, rsa_d;
 	char rsa_tmp[20] = "";
 	createKey_RSA(&rsa_n, &rsa_e, &rsa_d);
@@ -91,14 +92,11 @@ void *clnt_connection(void *arg)
 	int clnt_sock = (intptr_t) arg;
 	int msg_len=0;
 	char message[BUFSIZE];
-	char *tmp;
 	int i;
 
 	while((msg_len = read(clnt_sock, message, sizeof(message))) != 0)
 	{
-		tmp = strtok(message, " ");
-		if(block_check(tmp) == 0)
-			snd_message(message, msg_len);
+		snd_message(message, msg_len);
 	}
 
 	pthread_mutex_lock(&mutex);

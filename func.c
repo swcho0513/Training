@@ -61,19 +61,31 @@ void func()
 
 void block_msg(char *name)
 {
-	char *blockName;
-	printf("block [%s]'s msg.\n", name);
+	char blockName[NAMESIZE];
+	int i;
+
 	sprintf(blockName, "[%s]", name);
-	strcpy(blockUser[block_count], blockName);
-	block_count++;
+	if(block_check(blockName) == -1)
+		printf("%s is already blocked.\n", blockName);
+	else
+	{
+		strcpy(blockUser[block_count], blockName);
+		block_count++;
+	
+		printf("block User : ");
+		for(i=0; i<block_count; i++)
+			printf("%s ", blockUser[i]);
+		printf("\n");
+	}
 }
 
 int block_check(char *name)
 {
 	int i;
+
 	for(i=0; i<block_count; i++)
 	{
-		if(strcmp(name, blockUser[i]))
+		if(!strcmp(name, blockUser[i]))
 			return -1;
 	}
 	return 0;
@@ -83,3 +95,4 @@ void kick_usr(char *name)
 {
 	printf("kick [%s]\n", name);
 }
+

@@ -38,12 +38,11 @@ typedef struct
 User user_DB[MAX_USER];
 int user_index;
 char blockUser[MAX_CONNECT][ID_LEN];
-int block_count = 0;
 int block_check(char *name);
+int block_count;
+void func();
 
 void encrypt_SHA1(char *data);
 void createKey_RSA(int *n, int *e, int *d);
 void encrypt_RSA(char *data, int n, int e);
 void decrypt_RSA(char *data, int n, int d);
-
-void func();

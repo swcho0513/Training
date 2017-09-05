@@ -100,6 +100,8 @@ void *rcv_message(void *arg)
 {
 	int sock = (intptr_t) arg;
 	char rcv_msg[NAMESIZE+BUFSIZE];
+	char bc_msg[NAMESIZE+BUFSIZE];
+	char *bc_name;
 	int str_len;
 	while(1)
 	{
@@ -109,6 +111,10 @@ void *rcv_message(void *arg)
 		rcv_msg[str_len] = 0;
 
 		decrypt_RSA(rcv_msg, rsa_n, rsa_d);
-		printf("%s\n", rcv_msg);
+		
+		strcpy(bc_msg, rcv_msg);
+		bc_name = strtok(bc_msg, " ");
+		if(block_check(bc_name) == 0)
+			printf("%s\n", rcv_msg);
 	}
 }
