@@ -12,17 +12,17 @@
 
 void encrypt_SHA1(char *data)
 {
-	SHA1Context sha;
-	uint8_t result[20];
-	
-	if(SHA1Reset(&sha))
-		exit_error("SHA1 Reset Error");
+  SHA1Context sha;
+  uint8_t result[20];
 
-	if(SHA1Input(&sha, (const unsigned char *)data, strlen(data)))
-		exit_error("SHA1 Input Error");
-	
-	if(SHA1Result(&sha, result))
-		exit_error("SHA1 Result Error : Cannot encrypt data.");
+  if(SHA1Reset(&sha))
+    exit_error("SHA1 Reset Error");
 
-	strcpy(data, result);
+  if(SHA1Input(&sha, (const unsigned char *)data, strlen(data)))
+    exit_error("SHA1 Input Error");
+
+  if(SHA1Result(&sha, result))
+    exit_error("SHA1 Result Error : Cannot encrypt data.");
+
+  strcpy(data, result);
 }

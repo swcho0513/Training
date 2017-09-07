@@ -24,15 +24,15 @@
 #define	MAX_CONNECT	10
 #define MAX_USER	100
 #define FGETS(str, len, input) { fgets(str, len, input);\
-		if(str[strlen(str)-1] = '\n') str[strlen(str)-1] = '\0'; }
+  if(str[strlen(str)-1] = '\n') str[strlen(str)-1] = '\0'; }
 
 void exit_error(char *message);
 void user_man();
 
 typedef struct
 {
-	char id[ID_LEN];
-	char pw[PW_LEN];
+  char id[ID_LEN];
+  char pw[PW_LEN];
 }User;
 
 User user_DB[MAX_USER];

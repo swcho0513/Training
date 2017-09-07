@@ -11,6 +11,6 @@
 
 void exit_error(char *message)
 {
-	fprintf(stderr, "EXIT_ERROR : %s\n", message);
-	exit(1);
+  fprintf(stderr, "EXIT_ERROR : %s\n", message);
+  exit(1);
 }

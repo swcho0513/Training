@@ -11,11 +11,11 @@ CFLAGS =
 CTAGS = -pthread -lsqlite3
 TARGET = server client
 HEADER = header.h sha1.h rsa.h
-SERV_SRC = server.c exit_error.c $(USER_MAN_SRC) $(SECURE_SRC) $(ADD_SRC)
-CLNT_SRC = client.c exit_error.c $(USER_MAN_SRC) $(SECURE_SRC) $(ADD_SRC)
+SERV_SRC = server.c exit_error.c $(USER_MAN_SRC) $(SECURE_SRC) $(FUNC_SRC)
+CLNT_SRC = client.c exit_error.c $(USER_MAN_SRC) $(SECURE_SRC) $(FUNC_SRC)
 USER_MAN_SRC = user_man.c
 SECURE_SRC = sha1.c sha.c rsa.c
-ADD_SRC = func.c
+FUNC_SRC = func.c
 
 all : $(TARGET)
 
