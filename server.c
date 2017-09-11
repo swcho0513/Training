@@ -11,11 +11,12 @@
 
 void *clnt_connection(void *arg);
 void snd_message(char *message, int len);
-void printUser();
+void printClnt();
 
 int clnt_number = 0;
 int clnt_socks[MAX_CONNECT];
 char clnt_name[MAX_CONNECT][NAMESIZE];
+char clnt_list[NAMESIZE*10];
 
 pthread_mutex_t mutex;
 
@@ -86,9 +87,11 @@ int main(int argc, char **argv)
     pthread_mutex_lock(&mutex);
 
     clnt_socks[clnt_number++] = clnt_sock;
-    printUser();
+    printClnt();
 
     pthread_mutex_unlock(&mutex);
+
+    write(clnt_sock, clnt_list, NAMESIZE*10);
 
     pthread_create(&thread, NULL, clnt_connection, (void *)(intptr_t) clnt_sock);
   }
@@ -101,10 +104,29 @@ void *clnt_connection(void *arg)
   int msg_len=0;
   char message[BUFSIZE];
   int i;
+  char cnt[2];
 
   while((msg_len = read(clnt_sock, message, sizeof(message))) != 0)
   {
-    snd_message(message, msg_len);
+#if 1 // print user list function
+    if(!strcmp(message, "l"))
+    {
+      snd_message(clnt_list, NAMESIZE*10);
+    }
+#endif
+#if 0
+    {
+      sprintf(cnt, "%d", clnt_number);
+      snd_message(cnt, 1);
+      for(i=0; i<clnt_number; i++)
+      {
+        printf("send to %s\n", clnt_name[i]);
+        snd_message(clnt_name[i], NAMESIZE);
+      }
+    }
+#endif
+    else
+      snd_message(message, msg_len);
   }
 
   pthread_mutex_lock(&mutex);
@@ -113,16 +135,16 @@ void *clnt_connection(void *arg)
     if(clnt_sock == clnt_socks[i])
     {
       printf(" Logout : %s\n", clnt_name[i]);
-#if 0
-      snd_message(clnt_name[i], strlen(clnt_name[i]));
-#endif
-      for(; i < clnt_number-1; i++)
+      for(; i<clnt_number-1; i++)
+      {
         clnt_socks[i] = clnt_socks[i+1];
+        strcpy(clnt_name[i], clnt_name[i+1]);
+      }
       break;
     }
   }
   clnt_number--;
-  printUser();
+  printClnt();
   pthread_mutex_unlock(&mutex);
   close(clnt_sock);
 
@@ -138,11 +160,16 @@ void snd_message(char *message, int len)
   pthread_mutex_unlock(&mutex);
 }
 
-void printUser()
+void printClnt()
 {
   int i;
-  printf(" ----- User List ----- \n");
+
+  printf(" ----- Clnt List ----- \n");
+  strcpy(clnt_list, " User List : ");
   for(i=0; i<clnt_number; i++)
-    printf(" %s", clnt_name[i]);
-  printf(" --------------------- \n");
+  {
+    printf("%s", clnt_name[i]);
+    strcat(clnt_list, clnt_name[i]);
+  }
+  printf("\n --------------------- \n");
 }

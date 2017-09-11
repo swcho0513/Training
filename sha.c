@@ -1,9 +1,9 @@
 /******************************************************************************
  *
- *  File Name	: security.c
+ *  File Name	: sha.c
  *
  *  File Create	: 2017-08-24
- *  Description	: Encrypt & Decrypt Data with SHA-1, RSA Algorithm
+ *  Description	: Encrypt & Decrypt Data with SHA-1
  *
  ******************************************************************************/
 

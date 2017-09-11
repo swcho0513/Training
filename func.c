@@ -10,8 +10,8 @@
 #include "header.h"
 
 void printUser();
-void blockMsg(char *name);
-void kickUser(char *name);
+void blockMsg(const char *name);
+void kickUser(const char *name);
 
 void func()
 {
@@ -60,7 +60,7 @@ void func()
   }
 }
 
-void blockMsg(char *name)
+void blockMsg(const char *name)
 {
   char blockName[NAMESIZE];
   int i;
@@ -85,7 +85,7 @@ void blockMsg(char *name)
   }
 }
 
-int blockCheck(char *name)
+int blockCheck(const char *name)
 {
   int i;
 
@@ -97,7 +97,7 @@ int blockCheck(char *name)
   return 0;
 }
 
-void kickUser(char *name)
+void kickUser(const char *name)
 {
   printf("kick [%s]\n", name);
 }

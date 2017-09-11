@@ -14,16 +14,16 @@ void createKey_RSA(int *n, int *e, int *d)
 {
   int p, q, pi;
 
-  selectpk(&p, &q);
+  selectPK(&p, &q);
 
   *n = p*q;
   pi = (p-1)*(q-1);
 
-  *e = calc_e(pi);
-  *d = calc_d(pi, *e);
+  *e = calcE(pi);
+  *d = calcD(pi, *e);
 }
 
-void encrypt_RSA(char *data, int n, int e)
+void encrypt_RSA(char *data, const int n, const int e)
 {
   int i, j;
   int sum = 1;
@@ -44,7 +44,7 @@ void encrypt_RSA(char *data, int n, int e)
   strcpy(data, output);
 }
 
-void decrypt_RSA(char *data, int n, int d)
+void decrypt_RSA(char *data, const int n, const int d)
 {
   int i, j;
   int sum = 1;
@@ -72,7 +72,7 @@ void decrypt_RSA(char *data, int n, int d)
   strcpy(data, dec_msg);
 }
 
-void selectpk(int *p, int *q)
+void selectPK(int *p, int *q)
 {
   int random;
   int i, j;
@@ -105,7 +105,7 @@ void selectpk(int *p, int *q)
   }
 }
 
-int calc_e(int pi)
+int calcE(const int pi)
 {
   int i, j;
   int tmp = 1;
@@ -123,7 +123,7 @@ int calc_e(int pi)
   }
 }
 
-int calc_d(int pi, int e)
+int calcD(const int pi, const int e)
 {
   int i;
   for(i=2; i<pi; i++)

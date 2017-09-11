@@ -15,6 +15,7 @@ void *rcv_message(void *arg);
 char name[NAMESIZE] = "[Default]";
 char message[BUFSIZE];
 int rsa_n, rsa_e, rsa_d;
+char user_list[NAMESIZE*10];
 
 int main(int argc, char **argv)
 {
@@ -52,6 +53,7 @@ int main(int argc, char **argv)
     exit_error("connect() error!");
 
   printf("Chatting Program Started...\n");
+  printf("commands : '-q' to exit program, '-f' to enter function mode\n");
 
   write(sock, name, strlen(name));
 
@@ -63,6 +65,8 @@ int main(int argc, char **argv)
   rsa_e = atoi(rsa_tmp);
   read(sock, rsa_tmp, 16);
   rsa_d = atoi(rsa_tmp);
+  read(sock, user_list, NAMESIZE*10);
+  printf("%s\n", user_list);
 
   pthread_create(&snd_thread, NULL, snd_message, (void *)(intptr_t) sock);
   pthread_create(&rcv_thread, NULL, rcv_message, (void *)(intptr_t) sock);
@@ -78,16 +82,20 @@ void *snd_message(void *arg)
 {
   int sock = (intptr_t) arg;
   char snd_msg[NAMESIZE+BUFSIZE];
+
   while(1)
   {
     FGETS(message, BUFSIZE, stdin);
     if(!strcmp(message, "-q"))
     {
+      write(sock, message, strlen(message));
       close(sock);
       exit(0);
     }
     else if(!strcmp(message, "-f"))
+    {
       func();
+    }
     else
     {
       sprintf(snd_msg, "%s %s", name, message);
@@ -104,6 +112,7 @@ void *rcv_message(void *arg)
   char tok_msg[NAMESIZE+BUFSIZE];
   char *tok_name;
   int str_len;
+
   while(1)
   {
     str_len = read(sock, rcv_msg, NAMESIZE+BUFSIZE-1);

@@ -17,8 +17,8 @@ int user_cnt;
 int menu();
 int read_db();
 int login();
-int check_id(char *input);
-int check_pw(char *input, int index);
+int check_id(const char *input);
+int check_pw(const char *input, const int index);
 int join();
 // int delete();
 
@@ -123,7 +123,7 @@ int login()
   return 0;
 }
 
-int check_id(char *input)
+int check_id(const char *input)
 {
   int i;
   for(i=0; i<=user_cnt; i++)
@@ -134,7 +134,7 @@ int check_id(char *input)
   return -1;
 }
 
-int check_pw(char *input, int index)
+int check_pw(const char *input, const int index)
 {
   int i;
   for(i=0; i<20; i++)

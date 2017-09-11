@@ -9,7 +9,7 @@
 
 #include "header.h"
 
-void exit_error(char *message)
+void exit_error(const char *message)
 {
   fprintf(stderr, "EXIT_ERROR : %s\n", message);
   exit(1);
