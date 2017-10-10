@@ -108,13 +108,23 @@ void *clnt_connection(void *arg)
 
   while((msg_len = read(clnt_sock, message, sizeof(message))) != 0)
   {
+#if 1 // Read & Write Database Function Implementation
+    /* write message log to sql db */
+    if( sendQuery("create table msgLog(name char(20), msg char(80))") == 0 )
+      exit_error("sendQuery() error");
+    if( sendQuery("insert into msgLog values(name, msg)") == 0 )
+      exit_error("sendQuery() error");
+#elif 0
+    if( sendQuery("select * from msgLog") == 0 )
+      exit_error("sendQuery() error");
+#endif
+
 #if 1 // print user list function
     if(!strcmp(message, "l"))
     {
       snd_message(clnt_list, NAMESIZE*10);
     }
-#endif
-#if 0
+#elif 0
     {
       sprintf(cnt, "%d", clnt_number);
       snd_message(cnt, 1);
