@@ -39,7 +39,9 @@ void func()
         tmp = strtok(NULL, " ");
         if(tmp)
         {
-          strcpy(targetName, tmp);
+            //cmjeong edit
+          //strcpy(targetName, tmp);
+          strncpy(targetName,tmp,strlen(tmp));
           blockMsg(targetName);
           loop = 0;
         }
@@ -48,7 +50,9 @@ void func()
         tmp = strtok(NULL, " ");
         if(tmp)
         {
-          strcpy(targetName, tmp);
+            //edit cmjeong
+          //strcpy(targetName, tmp);
+          strncpy(targetName,tmp,strlen(tmp));
           kickUser(targetName);
           loop = 0;
         }
@@ -74,7 +78,9 @@ void blockMsg(const char *name)
       printf("%s is already blocked.\n", blockName);
     else
     {
-      strcpy(blockUser[block_count], blockName);
+        //edit cmjeong
+      //strcpy(blockUser[block_count], blockName);
+      strncpy(blockUser[block_count],blockName,strlen(blockName));
       block_count++;
 
       printf("block User : ");

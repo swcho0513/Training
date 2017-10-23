@@ -167,6 +167,8 @@ void snd_message(char *message, int len)
   pthread_mutex_lock(&mutex);
   for(i=0; i<clnt_number; i++)
     write(clnt_socks[i], message, len);
+  //cmjeong edit
+  memset(message,0,sizeof(message));
   pthread_mutex_unlock(&mutex);
 }
 

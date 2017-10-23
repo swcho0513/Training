@@ -7,6 +7,10 @@
  *
  ******************************************************************************/
 
+//cmjoeng edit 
+#ifndef __TRAINING_H__
+#define __TRAINING_H__
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -46,3 +50,5 @@ void encrypt_SHA1(char *data);
 void createKey_RSA(int *n, int *e, int *d);
 void encrypt_RSA(char *data, const int n, const int e);
 void decrypt_RSA(char *data, const int n, const int d);
+
+#endif

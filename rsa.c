@@ -14,6 +14,11 @@ void createKey_RSA(int *n, int *e, int *d)
 {
   int p, q, pi;
 
+  //cmjeong edit
+  if(n==NULL || e==NULL || d ==NULL)
+  {
+    exit_error("createKey_RSA function parameter error");
+  }
   selectPK(&p, &q);
 
   *n = p*q;
@@ -29,6 +34,12 @@ void encrypt_RSA(char *data, const int n, const int e)
   int sum = 1;
   char enc_msg[128] = "\0";
   char output[128] = "";
+
+  //cmjeong edit
+  if(data ==NULL || e<0)
+  {
+      exit_error("encrypt_RSA function parameter error");
+  }
 
   for(i=0; i<strlen(data); i++)
   {
@@ -54,6 +65,11 @@ void decrypt_RSA(char *data, const int n, const int d)
 
   i = 0;
 
+  //cmjeong edit
+  if(data==NULL || d <0)
+  {
+      exit_error("decrypt_RSA function parameter error");
+  }
   word = atoi(strtok(data, " "));
   while(word)
   {
@@ -77,6 +93,12 @@ void selectPK(int *p, int *q)
   int random;
   int i, j;
   int ck, ck2 = 0;
+
+  //cmjeong edit
+  if(p == NULL || q==NULL)
+  {
+      exit_error("selectPK function parameter error");
+  }
 
   srand((unsigned)time(NULL));
   random = (rand()%100);
@@ -126,6 +148,11 @@ int calcE(const int pi)
 int calcD(const int pi, const int e)
 {
   int i;
+  //cmjeong edit'
+  if(pi==0)
+  {
+      exit_error("calcD function parameter error");
+  }
   for(i=2; i<pi; i++)
   {
     if((e*i) % pi == 1)
