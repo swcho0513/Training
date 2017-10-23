@@ -102,6 +102,8 @@ void *snd_message(void *arg)
       encrypt_RSA(snd_msg, rsa_n, rsa_e);
       write(sock, snd_msg, strlen(snd_msg));
     }
+    //cmjeong edit
+    memset(message,0,sizeof(message));
   }
 }
 
@@ -122,10 +124,15 @@ void *rcv_message(void *arg)
 
     decrypt_RSA(rcv_msg, rsa_n, rsa_d);
 
-    strcpy(tok_msg, rcv_msg);
+    //edit cmjeong
+    strncpy(tok_msg,rcv_message,strlen(rcv_msg));
+    //strcpy(tok_msg, rcv_msg);
     tok_name = strtok(tok_msg, " ");
     
     if(blockCheck(tok_name) == 0)
       printf("%s\n", rcv_msg);
+
+    //cmjeong edit
+    memset(rcv_message,0,sizeof(rcv_msg));
   }
 }

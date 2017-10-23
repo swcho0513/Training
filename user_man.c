@@ -174,8 +174,13 @@ int join()
       break;
   }
 
-  FILE *fp;
+  //cmjeong edit
+  FILE *fp = NULL;
   fp = fopen(USER_DB, "a+");
+  if(fp==NULL)
+  {
+      exit_error("file not opend...  function join()");
+  }
   encrypt_SHA1(new_pw);
   fprintf(fp, "%s %s\n", new_id, new_pw);
   fclose(fp);
