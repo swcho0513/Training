@@ -24,44 +24,53 @@ void func()
   while(loop)
   {
     printf("----------  USER_FUNCTION  ----------\n");
-    printf("b username : BLOCK [username]'s MESSAGE\n");
-    printf("k username : KICK [username]\n");
+    printf("b name : BLOCK [name]'s MESSAGE\n");
+    printf("k name : KICK [name]\n");
+    printf("p name : PRINT [name]'s MESSAGE LOG\n");
     printf("q          : QUIT USER_FUCTION\n");
     printf("input func : ");
 
     FGETS(buf, 2+NAMESIZE, stdin);
     tmp = strtok(buf, " ");
-    if(tmp)
+    if (tmp)
       command = buf[0];
     switch(command)
     {
       case 'b':
         tmp = strtok(NULL, " ");
-        if(tmp)
+        if (tmp)
         {
-            //cmjeong edit
+          strncpy(targetName, tmp, strlen(tmp));
           //strcpy(targetName, tmp);
-          strncpy(targetName,tmp,strlen(tmp));
           blockMsg(targetName);
           loop = 0;
         }
         break;
       case 'k':
         tmp = strtok(NULL, " ");
-        if(tmp)
+        if (tmp)
         {
-            //edit cmjeong
+          strncpy(targetName, tmp, strlen(tmp));
           //strcpy(targetName, tmp);
-          strncpy(targetName,tmp,strlen(tmp));
           kickUser(targetName);
           loop = 0;
         }
         break;
+      case 'p':
+        tmp = strtok(NULL, " ");
+        if (tmp)
+        {
+          sprintf(targetName, "[%s]", tmp);
+          msgSearch(targetName);
+          loop = 0;
+        }
       case 'q':
         loop = 0;
         break;
     }
   }
+  
+  return ;
 }
 
 void blockMsg(const char *name)
@@ -69,35 +78,36 @@ void blockMsg(const char *name)
   char blockName[NAMESIZE];
   int i;
 
-  if(check_id(name) == -1)
+  if ( check_id(name) == -1 )
     printf("[%s] no exist in chat\n", name);
   else
   {
     sprintf(blockName, "[%s]", name);
-    if(blockCheck(blockName) == -1)
+    if ( blockCheck(blockName) == -1 )
       printf("%s is already blocked.\n", blockName);
     else
     {
-        //edit cmjeong
+      strncpy(blockUser[block_count], blockName, strlen(blockName));
       //strcpy(blockUser[block_count], blockName);
-      strncpy(blockUser[block_count],blockName,strlen(blockName));
       block_count++;
 
       printf("block User : ");
-      for(i=0; i<block_count; i++)
+      for (i=0; i<block_count; i++)
         printf("%s ", blockUser[i]);
       printf("\n");
     }
   }
+
+  return ;
 }
 
 int blockCheck(const char *name)
 {
   int i;
 
-  for(i=0; i<block_count; i++)
+  for (i=0; i<block_count; i++)
   {
-    if(!strcmp(name, blockUser[i]))
+    if ( !strcmp(name, blockUser[i]) )
       return -1;
   }
   return 0;
@@ -105,6 +115,12 @@ int blockCheck(const char *name)
 
 void kickUser(const char *name)
 {
-  printf("kick [%s]\n", name);
-}
+  if ( check_id(name) == -1 )
+    printf("[%s] no exist in chat\n", name);
+  else
+  {
+    printf("kick [%s]\n", name);
+  }
 
+  return ;
+}

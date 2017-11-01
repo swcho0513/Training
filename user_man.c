@@ -17,7 +17,6 @@ int user_cnt;
 int menu();
 int read_db();
 int login();
-int check_id(const char *input);
 int check_pw(const char *input, const int index);
 int join();
 // int delete();
@@ -42,6 +41,8 @@ void user_man()
         exit(1);
     }
   }
+
+  return ;
 }
 
 int menu()
@@ -56,6 +57,7 @@ int menu()
   printf("Input number : ");
   scanf("%d", &m);
   __fpurge(stdin);
+
   return m;
 }
 
@@ -67,25 +69,26 @@ int read_db()
   int cnt = 0;
 
   fp = fopen(USER_DB, "r");
-  if(fp == NULL)
+  if ( fp == NULL )
     return -1;
 
   while(!feof(fp))
   {
-    if(!fgets(buf, 1024, fp))
+    if ( !fgets(buf, 1024, fp) )
       break;
-    if(buf[strlen(buf)-1] == '\n')
+    if ( buf[strlen(buf)-1] == '\n' )
       buf[strlen(buf)-1] = '\0';
     tmp = strtok(buf, " ");
-    if(tmp)
+    if (tmp)
       strcpy(user_DB[cnt].id, tmp);
     tmp = strtok(NULL, "\n");
-    if(tmp)
+    if (tmp)
       strcpy(user_DB[cnt].pw, tmp);
     cnt++;
   }
   user_cnt = cnt;
   fclose(fp);
+
   return 0;
 }
 
@@ -95,7 +98,7 @@ int login()
   char input_pw[20];
   int id_index;
   printf("--------- Log-in ---------\n");
-  if(user_cnt == 0)
+  if (user_cnt == 0)
   {
     printf("There is no user in database. Use [JOIN] menu.\n");
     return 1;
@@ -104,44 +107,48 @@ int login()
   {
     printf("ID(e : exit to menu) : ");
     FGETS(input_id, 20, stdin);
-    if(!strcmp(input_id, "e"))
+    if ( !strcmp(input_id, "e") )
       return 1;
-    if((id_index = check_id(input_id)) == -1)
+
+    if ( (id_index = check_id(input_id)) == -1 )
       printf("Cannot find id. Input again.\n");
     else
     {
       printf("[%s] Password : ", input_id);
       FGETS(input_pw, 20, stdin);
       encrypt_SHA1(input_pw);
-      if(check_pw(input_pw, id_index) == -1)
+      if ( check_pw(input_pw, id_index) == -1 )
         printf("Input wrong password. Input again.\n");
       else
         break;
     }
   }
   user_index = id_index;
+
   return 0;
 }
 
 int check_id(const char *input)
 {
   int i;
-  for(i=0; i<=user_cnt; i++)
+  for (i=0; i<=user_cnt; i++)
   {
-    if(strcmp(user_DB[i].id, input) == 0)
+    if ( strcmp(user_DB[i].id, input) == 0 )
       return i;
   }
+
   return -1;
 }
 
 int check_pw(const char *input, const int index)
 {
   int i;
-  for(i=0; i<20; i++)
+  for (i=0; i<20; i++)
   {
-    if(user_DB[index].pw[i] != input[i])
+    if ( user_DB[index].pw[i] != input[i] )
       return -1;
-  }		
+  }
+
   return 0;
 }
 
@@ -155,11 +162,11 @@ int join()
     printf("Input ID & Password (5~20), input 'e' to exit menu.\n");
     printf("New ID : ");
     FGETS(new_id, 40, stdin);
-    if(!strcmp(new_id, "e"))
+    if ( !strcmp(new_id, "e") )
       return 1;
-    if(strlen(new_id) < 5 || strlen(new_id) > 20)
+    if ( strlen(new_id) < 5 || strlen(new_id) > 20 )
       printf("Input 5~20 characters for id.\n");
-    else if(check_id(new_id) == 0)
+    else if ( check_id(new_id) == 0 )
       printf("[%s] is exist. Input another id.\n", new_id);
     else
       break;
@@ -168,19 +175,19 @@ int join()
   {
     printf("PW : ");
     FGETS(new_pw, 40, stdin);
-    if(strlen(new_pw) < 5 || strlen(new_pw) > 20)
+    if ( strlen(new_pw) < 5 || strlen(new_pw) > 20 )
       printf("Input 5~20 characters for password.\n");
     else
       break;
   }
 
-  //cmjeong edit
-  FILE *fp = NULL;
+  FILE *fp;
+
   fp = fopen(USER_DB, "a+");
-  if(fp==NULL)
-  {
-      exit_error("file not opend...  function join()");
-  }
+
+  if ( fp == NULL )
+    exit_error("join() function DB-file open error");
+
   encrypt_SHA1(new_pw);
   fprintf(fp, "%s %s\n", new_id, new_pw);
   fclose(fp);

@@ -11,11 +11,10 @@ CFLAGS =
 CTAGS = -pthread -lsqlite
 TARGET = server client
 HEADER = header.h sha1.h rsa.h
-SERV_SRC = server.c exit_error.c $(USER_MAN_SRC) $(SECURE_SRC) $(FUNC_SRC) database.c
-CLNT_SRC = client.c exit_error.c $(USER_MAN_SRC) $(SECURE_SRC) $(FUNC_SRC)
-USER_MAN_SRC = user_man.c 
+SERV_SRC = server.c exit_error.c $(SECURE_SRC) $(FUNC_SRC)
+CLNT_SRC = client.c exit_error.c $(SECURE_SRC) $(FUNC_SRC)
 SECURE_SRC = sha1.c sha.c rsa.c
-FUNC_SRC = func.c
+FUNC_SRC = func.c user_man.c database.c
 
 all : $(TARGET)
 
@@ -30,7 +29,3 @@ client : $(CLNT_SRC) $(HEADER)
 clean :
 	@rm $(TARGET)
 	@echo "REMOVE EXEC FILES"
-
-cleandb :
-	@rm User_db.txt
-	@echo "REMOVE DB FILE"

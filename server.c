@@ -17,6 +17,7 @@ int clnt_number = 0;
 int clnt_socks[MAX_CONNECT];
 char clnt_name[MAX_CONNECT][NAMESIZE];
 char clnt_list[NAMESIZE*10];
+int rsa_n, rsa_e, rsa_d;
 
 pthread_mutex_t mutex;
 
@@ -29,8 +30,9 @@ int main(int argc, char **argv)
   int clnt_addr_size;
   pthread_t thread;
   int i;
+  char rsa_tmp[20] = "";
 
-  if(argc != 2)
+  if ( argc != 2 )
 #if 0
   {
     printf("Usage : %s <port>\n", argv[0]);
@@ -43,11 +45,11 @@ int main(int argc, char **argv)
   }
 #endif
 
-  if(pthread_mutex_init(&mutex, NULL))
+  if ( pthread_mutex_init(&mutex, NULL) )
     exit_error("pthread_mutex_init() error");
 
   serv_sock = socket(PF_INET, SOCK_STREAM, 0);
-  if(serv_sock == -1)
+  if ( serv_sock == -1 )
     exit_error("socket() error");
 
   memset(&serv_addr, 0, sizeof(serv_addr));
@@ -55,19 +57,40 @@ int main(int argc, char **argv)
   serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
   serv_addr.sin_port = htons(atoi(argv[1]));
 
-  if(bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
+  if ( bind(serv_sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1 )
     exit_error("bind() error");
 
-  if(listen(serv_sock, 5) == -1)
+  if ( listen(serv_sock, 5) == -1 )
     exit_error("listen() error");
 
   printf("-- Chatting Server Initialized.\n");
   printf("-- Wating for client login.....\n");
 
   block_count = 0;
-  int rsa_n, rsa_e, rsa_d;
-  char rsa_tmp[20] = "";
+
   createKey_RSA(&rsa_n, &rsa_e, &rsa_d);
+
+#if 1 // daemonize
+  pid_t pid, sid;
+
+  pid = fork();
+  if ( pid < 0 )
+    exit_error("fork() error");
+
+  if ( pid > 0 )
+    exit(EXIT_SUCCESS);
+
+  umask(0);
+
+  sid = setsid();
+
+  if ( sid < 0 )
+    exit_error("setsid() error");
+
+  close(STDIN_FILENO);
+  close(STDOUT_FILENO);
+  close(STDERR_FILENO);
+#endif
 
   while(1)
   {
@@ -75,7 +98,7 @@ int main(int argc, char **argv)
     clnt_sock = accept(serv_sock, (struct sockaddr *)&clnt_addr, &clnt_addr_size);
 
     read(clnt_sock, clnt_name[clnt_number], sizeof(clnt_name[clnt_number]));
-    printf(" Login  : %s (ip: %s)\n", clnt_name[clnt_number], inet_ntoa(clnt_addr.sin_addr));
+    //printf(" Login  : %s (ip: %s)\n", clnt_name[clnt_number], inet_ntoa(clnt_addr.sin_addr));
 
     sprintf(rsa_tmp, "%d", rsa_n);
     write(clnt_sock, rsa_tmp, 16);
@@ -91,10 +114,11 @@ int main(int argc, char **argv)
 
     pthread_mutex_unlock(&mutex);
 
-    write(clnt_sock, clnt_list, NAMESIZE*10);
+    write(clnt_sock, clnt_list, strlen(clnt_list));
 
     pthread_create(&thread, NULL, clnt_connection, (void *)(intptr_t) clnt_sock);
   }
+
   return 0;
 }
 
@@ -108,32 +132,19 @@ void *clnt_connection(void *arg)
 
   while((msg_len = read(clnt_sock, message, sizeof(message))) != 0)
   {
-#if 1 // Read & Write Database Function Implementation
+#if 0 // Read & Write Database Function Implementation : delete 2017-10-13
     /* write message log to sql db */
-    if( sendQuery("create table msgLog(name char(20), msg char(80))") == 0 )
-      exit_error("sendQuery() error");
-    if( sendQuery("insert into msgLog values(name, msg)") == 0 )
-      exit_error("sendQuery() error");
-#elif 0
-    if( sendQuery("select * from msgLog") == 0 )
-      exit_error("sendQuery() error");
+    if ( sendQuery("create table msgLog(name char(20), msg char(80))") == 0 )
+      exit_error("sendQuery() create error");
+    if ( sendQuery("insert into msgLog values(name, msg)") == 0 )
+      exit_error("sendQuery() insert error");
+    if ( sendQuery("select * from msgLog") == 0 )
+      exit_error("sendQuery() select error");
 #endif
 
 #if 1 // print user list function
-    if(!strcmp(message, "l"))
-    {
+    if ( !strcmp(message, "-l") )
       snd_message(clnt_list, NAMESIZE*10);
-    }
-#elif 0
-    {
-      sprintf(cnt, "%d", clnt_number);
-      snd_message(cnt, 1);
-      for(i=0; i<clnt_number; i++)
-      {
-        printf("send to %s\n", clnt_name[i]);
-        snd_message(clnt_name[i], NAMESIZE);
-      }
-    }
 #endif
     else
       snd_message(message, msg_len);
@@ -142,10 +153,10 @@ void *clnt_connection(void *arg)
   pthread_mutex_lock(&mutex);
   for(i=0; i<clnt_number; i++)
   {
-    if(clnt_sock == clnt_socks[i])
+    if ( clnt_sock == clnt_socks[i] )
     {
-      printf(" Logout : %s\n", clnt_name[i]);
-      for(; i<clnt_number-1; i++)
+      //printf(" Logout : %s\n", clnt_name[i]);
+      for (; i<clnt_number-1; i++)
       {
         clnt_socks[i] = clnt_socks[i+1];
         strcpy(clnt_name[i], clnt_name[i+1]);
@@ -164,24 +175,49 @@ void *clnt_connection(void *arg)
 void snd_message(char *message, int len)
 {
   int i;
+
   pthread_mutex_lock(&mutex);
-  for(i=0; i<clnt_number; i++)
+  for (i=0; i<clnt_number; i++)
     write(clnt_socks[i], message, len);
-  //cmjeong edit
-  memset(message,0,sizeof(message));
+
+  memset(message, 0, sizeof(message));
   pthread_mutex_unlock(&mutex);
+
+  return ;
 }
+
+#if 0
+void msgLoging(char *rcvmsg)
+{
+  struct Keyword K = {};
+  char *tok;
+
+  tok = strtok(rcvmsg, " ");
+  strcpy(K.name, tok);
+  tok = strtok(NULL, "\n");
+  strcpy(K.msg, rcvmsg);
+  strcpy(K.time, "");
+
+  if ( sendQuery("create table msgLog(time char(20), name char(20), msg char(80))") == 0 )
+    exit_error("sendQuery() error");
+
+  if ( sendQuery("insert into msgLog values(K.time, K.name, K.msg)") == 0 )
+    exit_error("sendQuery() error");
+}
+#endif
 
 void printClnt()
 {
   int i;
 
-  printf(" ----- Clnt List ----- \n");
+  //printf(" ----- Clnt List ----- \n");
   strcpy(clnt_list, " User List : ");
-  for(i=0; i<clnt_number; i++)
+  for (i=0; i<clnt_number; i++)
   {
-    printf("%s", clnt_name[i]);
+    //printf("%s", clnt_name[i]);
     strcat(clnt_list, clnt_name[i]);
   }
-  printf("\n --------------------- \n");
+  //printf("\n --------------------- \n");
+
+  return ;
 }

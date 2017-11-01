@@ -12,6 +12,6 @@
 #include <time.h>
 #include <string.h>
 
-void selectPK(int *p, int *q);
-int calcE(const int pi);
-int calcD(const int pi, const int e);
+void    selectPK(int *p, int *q);
+int     calcE(const int pi);
+int     calcD(const int pi, const int e);

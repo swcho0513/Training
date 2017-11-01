@@ -24,7 +24,7 @@ int main(int argc, char **argv)
   pthread_t snd_thread, rcv_thread;
   void *thread_result;
 
-  if(argc != 3)
+  if ( argc != 3 )
 #if 0
   {
     printf("Usage : %s <ip> <port> \n", argv[0]);
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   user_man();
   sprintf(name, "[%s]", user_DB[user_index].id);
 
-  if((sock = socket(PF_INET, SOCK_STREAM, 0)) == -1)
+  if ( (sock = socket(PF_INET, SOCK_STREAM, 0)) == -1 )
     exit_error("socket() error");
 
   memset(&serv_addr, 0, sizeof(serv_addr));
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
   serv_addr.sin_addr.s_addr=inet_addr(argv[1]);
   serv_addr.sin_port=htons(atoi(argv[2]));
 
-  if(connect(sock,(struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1)
+  if ( connect(sock,(struct sockaddr*)&serv_addr, sizeof(serv_addr)) == -1 )
     exit_error("connect() error!");
 
   printf("Chatting Program Started...\n");
@@ -65,6 +65,7 @@ int main(int argc, char **argv)
   rsa_e = atoi(rsa_tmp);
   read(sock, rsa_tmp, 16);
   rsa_d = atoi(rsa_tmp);
+
   read(sock, user_list, NAMESIZE*10);
   printf("%s\n", user_list);
 
@@ -75,6 +76,7 @@ int main(int argc, char **argv)
   pthread_join(rcv_thread, &thread_result);
 
   close(sock);
+
   return 0;
 }
 
@@ -86,24 +88,30 @@ void *snd_message(void *arg)
   while(1)
   {
     FGETS(message, BUFSIZE, stdin);
-    if(!strcmp(message, "-q"))
+    if ( !strcmp(message, "-q") )
     {
       write(sock, message, strlen(message));
       close(sock);
       exit(0);
     }
-    else if(!strcmp(message, "-f"))
+    else if ( !strcmp(message, "-f") )
     {
       func();
+    }
+    else if ( !strcmp(message, "-l") )
+    {
+      printf("------- User List -------\n");
+      printf("%s", user_list);
     }
     else
     {
       sprintf(snd_msg, "%s %s", name, message);
+      msgLog(snd_msg);
       encrypt_RSA(snd_msg, rsa_n, rsa_e);
       write(sock, snd_msg, strlen(snd_msg));
     }
-    //cmjeong edit
-    memset(message,0,sizeof(message));
+
+    memset(message, 0, sizeof(message));
   }
 }
 
@@ -118,21 +126,18 @@ void *rcv_message(void *arg)
   while(1)
   {
     str_len = read(sock, rcv_msg, NAMESIZE+BUFSIZE-1);
-    if(str_len == -1)
+    if ( str_len == -1 )
       return (void *)1;
     rcv_msg[str_len] = 0;
 
     decrypt_RSA(rcv_msg, rsa_n, rsa_d);
 
-    //edit cmjeong
-    strncpy(tok_msg,rcv_message,strlen(rcv_msg));
+    strncpy(tok_msg, rcv_msg, strlen(rcv_msg));
     //strcpy(tok_msg, rcv_msg);
     tok_name = strtok(tok_msg, " ");
-    
-    if(blockCheck(tok_name) == 0)
-      printf("%s\n", rcv_msg);
 
-    //cmjeong edit
-    memset(rcv_message,0,sizeof(rcv_msg));
+    if ( blockCheck(tok_name) == 0 )
+      printf("%s\n", rcv_msg);
   }
+  memset(rcv_msg, 0, sizeof(rcv_msg));
 }
