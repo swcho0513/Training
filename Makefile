@@ -8,7 +8,8 @@
 
 CC = gcc
 CFLAGS = 
-CTAGS = -pthread -lsqlite
+#CTAGS = -pthread -lsqlite
+CTAGS = -pthread
 TARGET = server client
 HEADER = header.h sha1.h rsa.h
 SERV_SRC = server.c exit_error.c $(SECURE_SRC) $(FUNC_SRC)
