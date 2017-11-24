@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "header.h"
-#include "sqlite.h"
+//#include "sqlite.h"
 
 #define DB_FILE "msglog.db"
 #define MSG_LOG "msg.log"
